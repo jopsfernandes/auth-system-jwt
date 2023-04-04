@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Página de Login e Cadastro</title>
+	<link rel="stylesheet" href="../public/styleOneChoose.css">
+</head>
+<body>
+	<nav>
+		<ul>
+			<li><a href="#">Login</a></li>
+			<li><a href="/auth/register">Cadastro</a></li>
+		</ul>
+	</nav>
+</body>
+</html>
