@@ -5,7 +5,6 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-//const res = require('express/lib/response');
 const path = require("path")
 const app = express();
 
@@ -45,15 +44,23 @@ mongoose.connect(dbAccess, {useNewUrlParser: true, useUnifiedTopology: true})
 //Public Route
 app.get("/", (req,res) =>{
   //  res.status(200).json({msg: 'Bem vindo a nossa API'})
-    res.sendFile(__dirname + "/views/index.html");
+    res.sendFile(__dirname + "/views/login.html");
+    
 })
 
+app.get("/cadastro", (req,res) =>{
+    //  res.status(200).json({msg: 'Bem vindo a nossa API'})
+      res.sendFile(__dirname + "/views/cadastro.html");
+      
+  })
+
 //Registrar usuário -> colocar um /auth/register depois
-app.post("/", async(req,res) => {
+app.post("/cadastro", async(req,res) => {
     const{name, email, password, confirmPassword} = req.body
     //validações
      
     const userExists = await User.findOne({email:email})
+    
     if(userExists){return res.status(422).json({msg: "por favor utilize outro email"})}
 
 
