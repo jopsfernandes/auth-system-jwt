@@ -5,6 +5,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+
 const path = require("path")
 const app = express();
 
@@ -74,7 +75,7 @@ app.post("/cadastro", async(req,res) => {
     const user = new User({
         name,
         email,
-        password
+        password: passwordHash,
     })
 
     try {
@@ -90,7 +91,7 @@ app.post("/cadastro", async(req,res) => {
 })
 
 //Login user
-app.post("/auth/user", async(req,res) => {
+app.post("/", async(req,res) => {
     const {email, password} = req.body
 
     const user = await User.findOne({email:email})

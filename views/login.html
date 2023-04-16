@@ -15,21 +15,25 @@
             <img src="../public/gatinho.svg" alt="Gatinho" class="left-login-svg">
         </div>
         <div class="right-login">
+          
             <div class="card-login">
 
                 <h1>LOGIN</h1>
+                <form action="/" method="POST">
+                    <div class="textfield">
 
-                <div class="textfield">
-                    <label for="usuario"></label>
-                    <input type="text" name ="username" placeholder="Email ou nome de usuário" required>
+                    <label for="email"></label>
+                    <input type="text" placeholder="Email ou nome de usuário" name="email" required>
 
-                </div>
+                    </div>
                 <div class="textfield">
                     <label for="password"> </label>
-                    <input type="password" name ="password" placeholder="Senha" required>
-                </div>
+                    <input type="password" placeholder="Senha" name="password" required>
+                    </div>
 
-                <button class="btn-login"> Login</button>
+                    <button type="submit"class="btn-login"> Login</button>
+                </form>
+                
 
                 <a href="#" text-decoration="none"> Esqueçeu sua senha?</a>
 
