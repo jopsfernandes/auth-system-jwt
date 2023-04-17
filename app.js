@@ -44,10 +44,15 @@ mongoose.connect(dbAccess, {useNewUrlParser: true, useUnifiedTopology: true})
 
 //Public Route
 app.get("/", (req,res) =>{
-  //  res.status(200).json({msg: 'Bem vindo a nossa API'})
+  
     res.sendFile(__dirname + "/views/login.html");
     
 })
+
+app.get("/dashboard", checkToken ,(req,res) =>{
+    res.sendFile(__dirname + "/views/dashboard.html" );
+})
+
 
 app.get("/cadastro", (req,res) =>{
     //  res.status(200).json({msg: 'Bem vindo a nossa API'})
@@ -62,7 +67,7 @@ app.post("/cadastro", async(req,res) => {
      
     const userExists = await User.findOne({email:email})
     
-    if(userExists){return res.status(422).json({msg: "por favor utilize outro email"})}
+    if(userExists){return res.status(422).json({msg: "that email already exists"})}
 
 
 
@@ -72,10 +77,12 @@ app.post("/cadastro", async(req,res) => {
 
     //criar usuário
 
+    const id = new mongoose.Types.ObjectId()
     const user = new User({
         name,
         email,
         password: passwordHash,
+        _id: id,
     })
 
     try {
@@ -106,14 +113,17 @@ app.post("/", async(req,res) => {
         const secret = process.env.SECRET
         const token = jwt.sign({
             id:user._id
-        },secret)
-        res.status(200).json({msg:"autenticação realizada com sucesso",token})
+        },secret);
+
+        
+        const headers = { Authorization: `Bearer ${token}` };
+        res.set(headers).redirect('/dashboard');
 
     } catch (err) {
         console.log(err)
-        res.status(500).json({msg:"aconteceu um erro inesperado"})
-        
+        res.status(500).json({msg:"Erro ao gerar o token JWT"})
     }
+    
 
 })
 
@@ -132,9 +142,23 @@ app.get("/user/:id", checkToken, async(req,res) =>{
     
 })
 
-function checkToken(req, res, next){
-    const authHeader = req.headers["authorization"]
-    const token = authHeader && authHeader.split("")[1]
+app.get("/user/:id", checkToken, async(req,res) =>{
+    const id = req.params.id
+
+    //check if user exists
+    const user = await User.findById(id, "-password")
+
+    if(!user){return res.status(404).json({msg:"usuário não encontrado"})}
+
+    res.status(200).json({user})
+
+    
+})
+
+async function checkToken(req, res, next){
+    const authHeader = await req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1];
+    console.log(token)
 
     if(!token){return res.status(401).json({msg: "Acesso negado"})}
 
