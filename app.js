@@ -49,7 +49,7 @@ app.get("/", (req,res) =>{
     
 })
 
-app.get("/dashboard", checkToken ,(req,res) =>{
+app.get("/dashboard",(req,res) =>{
     res.sendFile(__dirname + "/views/dashboard.html" );
 })
 
@@ -129,7 +129,7 @@ app.post("/", async(req,res) => {
 
 //Private Route
     //colocar middleware p n deixar a rota pública
-app.get("/user/:id", checkToken, async(req,res) =>{
+app.get("/user/:id", async(req,res) =>{
     const id = req.params.id
 
     //check if user exists
