@@ -1,13 +1,17 @@
 const {request, response} = require("express");
-require("dotenv").config();
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const User = require("../models/User");
 const {sign, verify} = require("jsonwebtoken");
 const asyncHandler = require("express-async-handler");
 const cookieParser = require("cookie-parser");
+const path = require("path");
 
 
+
+const getPageRender = async(req, res) => {
+  res.sendFile(path.join(__dirname, "../views/login.html"));
+}
 
 const Cadastro  =  asyncHandler(async(req,res) => {
     const {email, password} = req.body
@@ -86,7 +90,7 @@ const Login = asyncHandler(async(req,res) =>{
 
 const UsuarioAutenticado = asyncHandler(async (req, res) => {
   try {
-    const accessToken = req.cookies('accessToken');
+    const accessToken = req.cookies['accessToken'];
     const payload = verify(accessToken, process.env.SECRET);
     if (!payload) {
       return res.status(401);
@@ -101,7 +105,7 @@ const UsuarioAutenticado = asyncHandler(async (req, res) => {
     // Se chegou até aqui, o usuário está autenticado
     res.send({ message: 'usuário autenticado' });
   } catch (error) {
-    res.status(401).send({ message: 'não autenticado' });
+    console.log(error)
   }
 });
 
@@ -145,6 +149,7 @@ module.exports = {
     Login,
     UsuarioAutenticado,
     Refresh,
-    Logout
+    Logout,
+    getPageRender
 
 };

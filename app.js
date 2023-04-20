@@ -59,8 +59,10 @@ app.use(cors({
     origin: ['http://localhost:3000'],
     credentials:true
 }))
+
+
  app.listen(3000)
- console.log("conectou ao banco de dados!")
+ console.log(`${process.env.SECRET}`)
 routes(app);    
 
 })
