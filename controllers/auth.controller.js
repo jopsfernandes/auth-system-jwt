@@ -12,7 +12,7 @@ const cookieParser = require("cookie-parser");
 const Cadastro  =  asyncHandler(async(req,res) => {
     const {email, password} = req.body
     const userExists = await User.findOne({email:email});
-    if(userExists){return req.status(422)}
+    if(userExists){return res.status(422)}
 
     const salt = await bcrypt.genSalt(12)
     const passwordHash= await bcrypt.hash(password,salt)
@@ -116,7 +116,7 @@ const Refresh = asyncHandler(async (req, res) => {
       const accessToken = sign(
         {id: payload._id}, "access_secret", {expiresIn : "30s"});
 
-    res.cookie("accessToken", accessToken,{
+      res.cookie("accessToken", accessToken,{
             httpOnly: true,
             maxAge: 24 * 60 * 60 * 1000 // 1 dia
         });
@@ -131,6 +131,10 @@ const Refresh = asyncHandler(async (req, res) => {
     }
   });
   
+const Logout = asyncHandler(async(req,res) => {
+  res.cookie('accessToken', '', {maxAge:0});
+  res.cookie('refreshToken', '', {maxAge:0});
+})
 
 
 
@@ -140,6 +144,7 @@ module.exports = {
     Cadastro,
     Login,
     UsuarioAutenticado,
-    Refresh
+    Refresh,
+    Logout
 
 };
