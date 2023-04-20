@@ -1,8 +1,12 @@
 const express = require("express");
 const router = express.Router();
+const { Cadastro, Login, UsuarioAutenticado, Refresh } = require("../controllers/auth.controller");
 
-router.get("/", (req,res) =>{
-    res.sendFile
-})
+exports.routes = (app) => {
+  router.post("/cadastro", Cadastro);
+  router.post("/", Login);
+  router.get("/auth/user", UsuarioAutenticado);
+  router.post("/auth/refresh", Refresh )
 
-module.exports = router
+  app.use("/auth", router);
+};
