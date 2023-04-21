@@ -71,10 +71,14 @@
                     <span class="material-symbols-rounded">add</span>
                     <h3>Adicionar Produto</h3>
                 </a>
-                <a href="#">
-                    <span class="material-symbols-rounded">logout</span>
-                    <h3>Sair</h3>
-                </a>
+
+                <form action="/auth/logout" method="post">
+                    <a onClick =this.parentNode.submit(); >
+                        <span class="material-symbols-rounded">logout</span>
+                        <h3>Sair</h3>
+                    </a>
+                </form>
+               
                 
                 
 

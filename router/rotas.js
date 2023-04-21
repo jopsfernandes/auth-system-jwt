@@ -20,12 +20,13 @@ const {
 exports.routes = (app) => {
   
  
+
   router.get("/", getPageRender);
   router.get("/auth/refresh", getPageRender);
   router.get("/auth/login", getLoginRender);
   router.get("/auth/user", UsuarioAutenticado);
   router.get("/auth/cadastro", getRegisterRender);
-  router.get("/dashboard",getDashboardRender, UsuarioAutenticado);
+  router.get("/auth/dashboard", UsuarioAutenticado, getDashboardRender);
   
 
   
@@ -33,8 +34,9 @@ exports.routes = (app) => {
   router.post("/auth/refresh", Refresh );
   router.post("/auth/logout", Logout);
   router.post("/auth/cadastro", Cadastro);
-
+  
+  
   app.use("/", router);
   app.use("/auth",router)
-
+  
 };

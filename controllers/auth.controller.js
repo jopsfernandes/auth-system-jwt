@@ -44,63 +44,68 @@ const Login = asyncHandler(async(req,res) =>{
 
     const user = await User.findOne({email:email})
     
-    if(!user){return res.status(422)}
+    if(!user){return res.send({message: 'User not found'})}
 
 
     const checkPwd = await bcrypt.compare(password, user.password)
     if(!checkPwd){return res.status(422)}
 
-    const accessToken = sign(
-        {id: user._id},
-         process.env.ACCESS_SECRET,
-          {expiresIn : "1h"});
+    try {const accessToken = sign(
+      {id: user._id},
+       process.env.ACCESS_SECRET,
+        {expiresIn : "1h"});
 
-    const refreshToken = sign(
-        {id: user._id},
-         process.env.REFRESH_SECRET,
-         {expiresIn : "1w"});
+  const refreshToken = sign(
+      {id: user._id},
+       process.env.REFRESH_SECRET,
+       {expiresIn : "1w"});
 
-    res.cookie("accessToken", accessToken,{
-        httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000 // 1 dia
-    });
+  res.cookie("accessToken", accessToken,{
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000 // 1 dia
+  });
 
-    res.cookie("refreshToken", refreshToken,{
-        httpOnly: true,
-        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 dias
-    }); 
+  res.cookie("refreshToken", refreshToken,{
+      httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 dias
+  }); 
 
-    res.redirect("/dashboard");
+  res.redirect("/auth/dashboard");
+      
+    } catch (error) {
+      res.send({message: "user not found"});
+    }
 
 })
 
-const UsuarioAutenticado = asyncHandler(async (req, res, next) => {
+const UsuarioAutenticado = async (req, res, next) => {
   try {
     const accessToken = req.cookies['accessToken'];
     const payload = verify(accessToken, process.env.ACCESS_SECRET);
     if (!payload) {
-      return res.status(401);
+      return res.send({message: "sem token não entra não brother"});
     }
 
-    const user = await User.findOne({ _id: payload._id });
+    const user = await User.findOne({ _id: payload.id });
 
 
     if (!user) {
-      return res.status(401);
+      return res.send({message: "deu merda fml"});
     }
     
     // Se chegou até aqui, o usuário está autenticado
-
     next()
     
-  } catch (error) {
+    
+  } catch (e) {
     console.log(error)
+    res.send("foi mal mano tu não tem token")
   }
-});
+};
 
 const Refresh = asyncHandler(async (req, res) => {
     try {
-      const refreshToken = req.cookies('refreshToken');
+      const refreshToken = req.cookies['refreshToken'];
       const payload = verify(refreshToken, process.env.REFRESH_SECRET);
       if (!payload) {
         return res.status(401);
@@ -116,10 +121,11 @@ const Refresh = asyncHandler(async (req, res) => {
     
 
       // Se chegou até aqui, o usuário está autenticado
-      next();
+        
 
 
     } catch (error) {
+
       res.status(401).send({ message: 'não autenticado' });
     }
   });
@@ -127,6 +133,7 @@ const Refresh = asyncHandler(async (req, res) => {
 const Logout = asyncHandler(async(req,res) => {
   res.cookie('accessToken', '', {maxAge:0});
   res.cookie('refreshToken', '', {maxAge:0});
+  res.redirect('/auth/login');
 })
 
 
