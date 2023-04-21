@@ -8,15 +8,10 @@ const cookieParser = require("cookie-parser");
 const path = require("path");
 
 
-
-const getPageRender = async(req, res) => {
-  res.sendFile(path.join(__dirname, "../views/login.html"));
-}
-
 const Cadastro  =  asyncHandler(async(req,res) => {
-    const {email, password} = req.body
+    const {name, email, password} = req.body
     const userExists = await User.findOne({email:email});
-    if(userExists){return res.status(422)}
+    if(userExists){return res.status(422).send({message:`${name}  already exists` })}
 
     const salt = await bcrypt.genSalt(12)
     const passwordHash= await bcrypt.hash(password,salt)
@@ -33,6 +28,8 @@ const Cadastro  =  asyncHandler(async(req,res) => {
     try {
         await user.save()
         res.status(201)
+        res.redirect('/auth/login');
+       
         
         
     } catch (error) {
@@ -46,6 +43,7 @@ const Login = asyncHandler(async(req,res) =>{
     const {email ,password} = req.body
 
     const user = await User.findOne({email:email})
+    
     if(!user){return res.status(422)}
 
 
@@ -53,10 +51,14 @@ const Login = asyncHandler(async(req,res) =>{
     if(!checkPwd){return res.status(422)}
 
     const accessToken = sign(
-        {id: user._id}, "access_secret", {expiresIn : "30s"});
+        {id: user._id},
+         process.env.ACCESS_SECRET,
+          {expiresIn : "1h"});
 
     const refreshToken = sign(
-        {id: user._id}, "refresh_secret", {expiresIn : "1w"});
+        {id: user._id},
+         process.env.REFRESH_SECRET,
+         {expiresIn : "1w"});
 
     res.cookie("accessToken", accessToken,{
         httpOnly: true,
@@ -68,42 +70,29 @@ const Login = asyncHandler(async(req,res) =>{
         maxAge: 7 * 24 * 60 * 60 * 1000 // 7 dias
     }); 
 
-    res.status(200).redirect("/auth/user")
-    
-
-    // try {
-    //     const secret = process.env.SECRET
-    //     const token = jwt.sign({
-    //         id:user._id
-    //     },secret);
-
-        
-    //     const headers = { Authorization: `Bearer ${token}` };
-    //     res.set(headers).redirect('/dashboard');
-
-    // } catch (err) {
-    //     console.log(err)
-    //     res.status(500).json({msg:"Erro ao gerar o token JWT"})
-    // }
+    res.redirect("/dashboard");
 
 })
 
-const UsuarioAutenticado = asyncHandler(async (req, res) => {
+const UsuarioAutenticado = asyncHandler(async (req, res, next) => {
   try {
     const accessToken = req.cookies['accessToken'];
-    const payload = verify(accessToken, process.env.SECRET);
+    const payload = verify(accessToken, process.env.ACCESS_SECRET);
     if (!payload) {
       return res.status(401);
     }
 
-    const user = await User.findOne(payload._id);
+    const user = await User.findOne({ _id: payload._id });
+
 
     if (!user) {
       return res.status(401);
     }
     
     // Se chegou até aqui, o usuário está autenticado
-    res.send({ message: 'usuário autenticado' });
+
+    next()
+    
   } catch (error) {
     console.log(error)
   }
@@ -112,13 +101,13 @@ const UsuarioAutenticado = asyncHandler(async (req, res) => {
 const Refresh = asyncHandler(async (req, res) => {
     try {
       const refreshToken = req.cookies('refreshToken');
-      const payload = verify(refreshToken, process.env.SECRET);
+      const payload = verify(refreshToken, process.env.REFRESH_SECRET);
       if (!payload) {
         return res.status(401);
       }
 
       const accessToken = sign(
-        {id: payload._id}, "access_secret", {expiresIn : "30s"});
+        {id: payload.id}, "access_secret", {expiresIn : "30s"});
 
       res.cookie("accessToken", accessToken,{
             httpOnly: true,
@@ -127,7 +116,7 @@ const Refresh = asyncHandler(async (req, res) => {
     
 
       // Se chegou até aqui, o usuário está autenticado
-      res.send({ message: 'usuário autenticado' });
+      next();
 
 
     } catch (error) {
@@ -150,6 +139,5 @@ module.exports = {
     UsuarioAutenticado,
     Refresh,
     Logout,
-    getPageRender
 
 };

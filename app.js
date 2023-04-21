@@ -62,7 +62,7 @@ app.use(cors({
 
 
  app.listen(3000)
- console.log(`${process.env.SECRET}`)
+ console.log("Servidor rodando na porta 3000")
 routes(app);    
 
 })
