@@ -70,6 +70,8 @@ const Login = asyncHandler(async(req,res) =>{
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 dias
   }); 
 
+  
+
   res.redirect("/auth/dashboard");
       
     } catch (error) {
@@ -98,12 +100,12 @@ const UsuarioAutenticado = async (req, res, next) => {
     
     
   } catch (e) {
-    console.log(error)
+    console.log(e)
     res.send("foi mal mano tu não tem token")
   }
 };
 
-const Refresh = asyncHandler(async (req, res) => {
+const Refresh = asyncHandler(async (req, res, next) => {
     try {
       const refreshToken = req.cookies['refreshToken'];
       const payload = verify(refreshToken, process.env.REFRESH_SECRET);
@@ -121,6 +123,7 @@ const Refresh = asyncHandler(async (req, res) => {
     
 
       // Se chegou até aqui, o usuário está autenticado
+      next()
         
 
 
@@ -135,8 +138,6 @@ const Logout = asyncHandler(async(req,res) => {
   res.cookie('refreshToken', '', {maxAge:0});
   res.redirect('/auth/login');
 })
-
-
 
 
 

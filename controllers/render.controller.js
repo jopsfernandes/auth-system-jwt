@@ -19,7 +19,7 @@ const getLoginRender = asyncHandler(async(req,res) => {
 const getDashboardRender =asyncHandler(async(req, res) => {
     res.render(path.join(__dirname,"../views/dashboard.ejs"));
 })
-
+  
 module.exports = {
     getRegisterRender,
     getPageRender,

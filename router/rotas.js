@@ -24,7 +24,6 @@ exports.routes = (app) => {
   router.get("/", getPageRender);
   router.get("/auth/refresh", getPageRender);
   router.get("/auth/login", getLoginRender);
-  router.get("/auth/user", UsuarioAutenticado);
   router.get("/auth/cadastro", getRegisterRender);
   router.get("/auth/dashboard", UsuarioAutenticado, getDashboardRender);
   

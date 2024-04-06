@@ -30,6 +30,7 @@ body * {
 
 form{
 	width: 100%;
+	margin: 0;
 	display: flex;
 	flex-direction: column;
 	
@@ -102,7 +103,9 @@ form{
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	margin: 10px;
+	margin-bottom: 10px;
+	
+
 
 }
 
@@ -183,15 +186,20 @@ form{
 }
 
 @media only screen and (max-width : 950px){
+	.right-login{
+		width: 100vw !important;
+	}
 	.card-login{
 		width: 85%;
 	}
 }
 
 @media only screen and (max-width : 700px){
+	
 	.main-login{
 		flex-direction: column;
 		padding: 0;
+		
 	}
 
 	.left-login > h1{
@@ -200,7 +208,7 @@ form{
 
 	
  .card-login{
-	width: 100%;
+	width: 100vw;
  }
 	.left-login{
 		width: 100%;
@@ -217,4 +225,6 @@ form{
 		
 	}
 }
+
+
 
